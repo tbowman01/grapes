@@ -1,4 +1,4 @@
-# 🍇 GRAPES Hub (GitHub Remote AI Powered Evaluation Solution)
+# 🍇 GRAPES (GitHub Remote AI Powered Evaluation Solution)
 
 A powerful AI-driven automation hub for code evaluation, workflow orchestration, and developer productivity, leveraging GitHub Actions and open-source AI models.
 
