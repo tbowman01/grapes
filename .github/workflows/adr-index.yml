@@ -1,0 +1,59 @@
+name: Update ADR Index
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.adr/**'
+      - 'scripts/adr-index.mjs'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-index:
+    name: Generate ADR Index
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Generate ADR index
+        run: node scripts/adr-index.mjs
+
+      - name: Check for changes
+        id: check
+        run: |
+          git diff --exit-code docs/docs/adr.md .adr/README.md || echo "changed=true" >> $GITHUB_OUTPUT
+
+      - name: Commit and push changes
+        if: steps.check.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/docs/adr.md .adr/README.md
+          git commit -m "docs: update ADR index [skip ci]"
+          git push
+
+      - name: Generate summary
+        run: |
+          echo "## 📚 ADR Index Update" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ steps.check.outputs.changed }}" == "true" ]; then
+            echo "✅ ADR index has been updated and committed" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "ℹ️ ADR index is already up to date" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Files updated:**" >> $GITHUB_STEP_SUMMARY
+          echo "- \`docs/docs/adr.md\`" >> $GITHUB_STEP_SUMMARY
+          echo "- \`.adr/README.md\`" >> $GITHUB_STEP_SUMMARY
