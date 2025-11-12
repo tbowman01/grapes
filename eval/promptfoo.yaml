@@ -1,0 +1,89 @@
+version: 1
+
+description: 'GRAPES Hub - AI Model Evaluation Configuration'
+
+# Prompts to test
+prompts:
+  - id: code-review-prompt
+    label: 'Code Review Assistant'
+    content: |
+      You are an expert code reviewer. Review the following code and provide constructive feedback.
+      Focus on: correctness, performance, security, maintainability, and best practices.
+
+      Code: {{code}}
+
+      Provide your review in a structured format with clear sections.
+
+  - id: technical-qa
+    label: 'Technical Q&A'
+    content: |
+      You are a helpful technical assistant. Answer the following question accurately and concisely.
+
+      Question: {{question}}
+
+  - id: summarization
+    label: 'Documentation Summarizer'
+    content: |
+      Summarize the following documentation in 2-3 bullet points, highlighting the key information.
+
+      Documentation: {{text}}
+
+# Test datasets
+datasets:
+  - ./datasets/code-review-samples.jsonl
+  - ./datasets/technical-qa-samples.jsonl
+
+# Model providers to evaluate
+providers:
+  # Ollama (local models)
+  - id: ollama-llama
+    label: 'Ollama Llama 3.1 8B'
+    config:
+      model: ollama:chat:llama3.1:8b
+      baseUrl: http://host.docker.internal:11434
+      temperature: 0.7
+
+  # OpenAI (uncomment and set OPENAI_API_KEY to use)
+  # - id: openai-gpt4
+  #   label: 'OpenAI GPT-4'
+  #   config:
+  #     model: openai:gpt-4-turbo-preview
+  #     temperature: 0.7
+
+  # Anthropic (uncomment and set ANTHROPIC_API_KEY to use)
+  # - id: anthropic-claude
+  #   label: 'Anthropic Claude 3 Sonnet'
+  #   config:
+  #     model: anthropic:messages:claude-3-sonnet-20240229
+  #     temperature: 0.7
+
+# Evaluation metrics and assertions
+defaultTest:
+  assert:
+    # Response quality checks
+    - type: javascript
+      value: output.length > 50
+      metric: 'Response length (minimum 50 chars)'
+
+    - type: javascript
+      value: output.split(/\s+/).length > 10
+      metric: 'Word count (minimum 10 words)'
+
+    # Latency check (5 second max)
+    - type: latency
+      threshold: 5000
+
+    # Cost tracking
+    - type: cost
+      threshold: 0.50
+
+# Output configuration
+outputPath: ./output
+
+# Test configuration
+testConfig:
+  maxConcurrency: 3
+  timeout: 30000
+
+# Report generation
+sharing: false

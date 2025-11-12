@@ -1,0 +1,39 @@
+{
+  "name": "grapes-hub",
+  "version": "0.1.0",
+  "description": "GitHub Remote AI Powered Evaluation Solution - Production-grade template for AI-powered GitHub automations",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "eval": "cd eval && npx promptfoo@latest eval -c promptfoo.yaml"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tbowman01/grapes.git"
+  },
+  "keywords": [
+    "ai",
+    "automation",
+    "github-actions",
+    "evaluation",
+    "promptfoo",
+    "llm",
+    "ci-cd"
+  ],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/tbowman01/grapes/issues"
+  },
+  "homepage": "https://github.com/tbowman01/grapes#readme",
+  "devDependencies": {
+    "eslint": "^8.57.0",
+    "prettier": "^3.2.5"
+  },
+  "engines": {
+    "node": ">=22.0.0",
+    "npm": ">=10.0.0"
+  }
+}

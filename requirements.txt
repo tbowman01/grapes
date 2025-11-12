@@ -1,0 +1,18 @@
+# GRAPES Hub Python Dependencies
+# Python 3.10+
+
+# Testing
+pytest>=7.4.0
+pytest-cov>=4.1.0
+pytest-asyncio>=0.21.0
+
+# Code Quality
+black>=23.7.0
+flake8>=6.1.0
+pylint>=2.17.0
+mypy>=1.5.0
+
+# Utilities
+pyyaml>=6.0
+requests>=2.31.0
+python-dotenv>=1.0.0
