@@ -1,0 +1,38 @@
+# CODEOWNERS for GRAPES Hub
+#
+# These owners will be the default owners for everything in the repo.
+# Unless a later match takes precedence, they will be requested for
+# review when someone opens a pull request.
+
+# Default owners for everything
+*       @tbowman01
+
+# Documentation
+*.md                    @tbowman01
+/docs/**                @tbowman01
+/README.md              @tbowman01
+/CONTRIBUTING.md        @tbowman01
+
+# Configuration files
+/.github/**             @tbowman01
+/.env.example           @tbowman01
+/package.json           @tbowman01
+/Makefile               @tbowman01
+
+# Container and Docker
+/containers/**          @tbowman01
+Dockerfile              @tbowman01
+
+# Evaluation system
+/eval/**                @tbowman01
+/src/evaluation/**      @tbowman01
+
+# Scripts
+/scripts/**             @tbowman01
+
+# Security-sensitive files
+/.github/workflows/security-scan.yml    @tbowman01
+/scripts/ci-validate-env.sh             @tbowman01
+
+# Architecture Decision Records
+/.adr/**                @tbowman01

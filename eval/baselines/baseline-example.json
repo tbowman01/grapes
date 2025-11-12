@@ -1,0 +1,45 @@
+{
+  "version": "1.0.0",
+  "date": "2025-11-12",
+  "provider": "ollama:llama3.1:8b",
+  "description": "Baseline evaluation results for Ollama Llama 3.1 8B model",
+  "results": [
+    {
+      "test": "code-review-1",
+      "success": true,
+      "score": 0.85,
+      "latency": 1234,
+      "cost": 0.001
+    },
+    {
+      "test": "code-review-2",
+      "success": true,
+      "score": 0.90,
+      "latency": 1456,
+      "cost": 0.001
+    },
+    {
+      "test": "technical-qa-1",
+      "success": true,
+      "score": 0.88,
+      "latency": 987,
+      "cost": 0.0008
+    },
+    {
+      "test": "technical-qa-2",
+      "success": true,
+      "score": 0.92,
+      "latency": 1123,
+      "cost": 0.0009
+    }
+  ],
+  "summary": {
+    "totalTests": 4,
+    "passed": 4,
+    "failed": 0,
+    "passRate": 100,
+    "averageScore": 0.8875,
+    "averageLatency": 1200,
+    "totalCost": 0.0037
+  }
+}

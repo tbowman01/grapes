@@ -1,0 +1,135 @@
+# Label configuration for GRAPES Hub
+
+# Type labels
+- name: 'bug'
+  color: 'd73a4a'
+  description: 'Something is not working correctly'
+
+- name: 'enhancement'
+  color: 'a2eeef'
+  description: 'New feature or request'
+
+- name: 'documentation'
+  color: '0075ca'
+  description: 'Improvements or additions to documentation'
+
+- name: 'refactor'
+  color: 'fbca04'
+  description: 'Code refactoring without changing functionality'
+
+- name: 'test'
+  color: '1d76db'
+  description: 'Testing improvements'
+
+# Priority labels
+- name: 'priority: critical'
+  color: 'b60205'
+  description: 'Must be fixed immediately'
+
+- name: 'priority: high'
+  color: 'd93f0b'
+  description: 'Should be fixed soon'
+
+- name: 'priority: medium'
+  color: 'fbca04'
+  description: 'Normal priority'
+
+- name: 'priority: low'
+  color: '0e8a16'
+  description: 'Low priority'
+
+# Status labels
+- name: 'status: needs triage'
+  color: 'ededed'
+  description: 'Needs to be reviewed by maintainers'
+
+- name: 'status: in progress'
+  color: 'c2e0c6'
+  description: 'Work is in progress'
+
+- name: 'status: blocked'
+  color: 'e99695'
+  description: 'Blocked by external dependency'
+
+- name: 'status: needs review'
+  color: 'fbca04'
+  description: 'Waiting for code review'
+
+# Area labels
+- name: 'area: evaluation'
+  color: '5319e7'
+  description: 'Related to AI evaluation system'
+
+- name: 'area: security'
+  color: 'b60205'
+  description: 'Security-related changes'
+
+- name: 'area: ci/cd'
+  color: '1d76db'
+  description: 'CI/CD pipeline changes'
+
+- name: 'area: docker'
+  color: '0052cc'
+  description: 'Docker and containerization'
+
+- name: 'area: docs'
+  color: '0075ca'
+  description: 'Documentation changes'
+
+# Special labels
+- name: 'good first issue'
+  color: '7057ff'
+  description: 'Good for newcomers'
+
+- name: 'help wanted'
+  color: '008672'
+  description: 'Extra attention is needed'
+
+- name: 'duplicate'
+  color: 'cfd3d7'
+  description: 'This issue or PR already exists'
+
+- name: 'wontfix'
+  color: 'ffffff'
+  description: 'This will not be worked on'
+
+- name: 'invalid'
+  color: 'e4e669'
+  description: 'This does not seem right'
+
+- name: 'stale'
+  color: 'ededed'
+  description: 'No recent activity'
+
+- name: 'security'
+  color: 'd73a4a'
+  description: 'Security vulnerability or concern'
+
+- name: 'dependencies'
+  color: '0366d6'
+  description: 'Dependency updates'
+
+# Roadmap labels
+- name: 'roadmap: Y1Q1'
+  color: 'd4c5f9'
+  description: 'Year 1 Quarter 1 - Foundation'
+
+- name: 'roadmap: Y1Q2'
+  color: 'd4c5f9'
+  description: 'Year 1 Quarter 2 - Evaluation MVP'
+
+- name: 'roadmap: Y1Q3'
+  color: 'd4c5f9'
+  description: 'Year 1 Quarter 3 - Documentation'
+
+- name: 'roadmap: Y1Q4'
+  color: 'd4c5f9'
+  description: 'Year 1 Quarter 4 - Security & DX'
+
+- name: 'roadmap: year2'
+  color: 'c5def5'
+  description: 'Year 2 - Intelligence & Scale'
+
+- name: 'roadmap: year3'
+  color: 'bfdadc'
+  description: 'Year 3 - Platform & Marketplace'

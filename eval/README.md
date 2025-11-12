@@ -9,7 +9,9 @@ eval/
 ├── promptfoo.yaml         # Main evaluation configuration
 ├── datasets/              # Test datasets in JSONL format
 │   ├── code-review-samples.jsonl
-│   └── technical-qa-samples.jsonl
+│   ├── technical-qa-samples.jsonl
+│   ├── security-review-samples.jsonl
+│   └── performance-review-samples.jsonl
 ├── baselines/             # Baseline results for comparison
 └── output/                # Evaluation results (gitignored)
 ```
@@ -24,6 +26,15 @@ make eval
 
 # Without Docker
 make eval-local
+
+# Generate HTML report after evaluation
+make report
+
+# Compare against baseline
+make baseline-compare
+
+# Generate cost report
+make cost-report
 ```
 
 ### Run in CI/CD
@@ -53,12 +64,56 @@ Create a JSONL file in `datasets/` with this format:
 {"question": "Explain Docker", "expected": "Docker is..."}
 ```
 
+Or for code reviews:
+
+```jsonl
+{"code": "function example() { ... }", "expected": "Review feedback..."}
+```
+
 Then reference it in `promptfoo.yaml`:
 
 ```yaml
 datasets:
   - ./datasets/your-new-dataset.jsonl
 ```
+
+## Available Datasets
+
+### 1. Code Review Samples (`code-review-samples.jsonl`)
+10 test cases covering:
+- Code quality issues
+- Runtime errors
+- Edge cases
+- Memory leaks
+- Closure bugs
+
+### 2. Technical Q&A (`technical-qa-samples.jsonl`)
+10 test cases covering:
+- DevOps concepts (CI/CD, Docker, Kubernetes)
+- Web technologies (REST APIs, webhooks)
+- Authentication (JWT, sessions)
+- Database concepts (SQL vs NoSQL, CAP theorem)
+- Programming concepts (memoization)
+
+### 3. Security Review (`security-review-samples.jsonl`)
+10 test cases covering:
+- SQL injection
+- XSS vulnerabilities
+- Authentication issues
+- Path traversal
+- CORS misconfigurations
+- Secret exposure
+- Open redirects
+
+### 4. Performance Review (`performance-review-samples.jsonl`)
+10 test cases covering:
+- Algorithm complexity
+- Async patterns
+- DOM manipulation
+- Array operations
+- Polling strategies
+- Regex optimization
+- Bundle size optimization
 
 ## Model Providers
 
@@ -115,15 +170,58 @@ defaultTest:
 
 ## Viewing Results
 
-Results are stored in `eval/output/` (gitignored) and include:
-- `latest.json` - Latest evaluation results
-- HTML reports (if generated)
-- Individual test outputs
+### HTML Reports
 
-In CI/CD, results are uploaded as artifacts and can be viewed:
-- In GitHub Actions artifacts
-- As PR comments (summary)
-- In workflow step summaries
+Generate a visual report:
+```bash
+make report
+# Opens eval/output/report.html
+```
+
+Reports include:
+- Pass/fail summary
+- Individual test results
+- Latency metrics
+- Cost tracking
+
+### Baseline Comparison
+
+Compare current results against baseline:
+```bash
+make baseline-compare
+```
+
+This checks for:
+- Score regressions (>10% decrease)
+- Performance degradation
+- Cost increases
+
+### Cost Tracking
+
+Monitor evaluation costs:
+```bash
+make cost-report
+```
+
+Reports show:
+- Total cost across all tests
+- Cost by provider
+- Cost by day
+- Average cost per test
+
+## Creating Baselines
+
+After running evaluations, save results as baseline:
+
+```bash
+# Run evaluations
+make eval-local
+
+# Copy results to baseline
+cp eval/output/latest.json eval/baselines/baseline-$(date +%Y%m%d).json
+```
+
+Update `Makefile` baseline comparison to use your baseline file.
 
 ## Best Practices
 
@@ -132,6 +230,8 @@ In CI/CD, results are uploaded as artifacts and can be viewed:
 3. **Version control datasets** - Track changes to test data
 4. **Store baselines** - Keep baseline results for regression detection
 5. **Document prompts** - Add clear labels and descriptions to prompts
+6. **Review costs regularly** - Monitor spending with cost reports
+7. **Update baselines** - Refresh baselines when improving prompts
 
 ## Troubleshooting
 
@@ -147,8 +247,15 @@ In CI/CD, results are uploaded as artifacts and can be viewed:
 - Verify API keys are set: `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`
 - Check keys have proper permissions
 
+### High costs
+- Use local models (Ollama) for development
+- Reduce test dataset size
+- Set cost thresholds in assertions
+- Review cost reports regularly
+
 ## Resources
 
 - [Promptfoo Documentation](https://promptfoo.dev/docs/intro)
 - [GRAPES Roadmap](../docs/vision/roadmap-2025-2027.md)
 - [Contributing Guide](../CONTRIBUTING.md)
+- [ADR: Use Promptfoo](../.adr/0002-use-promptfoo-for-evaluations.md)

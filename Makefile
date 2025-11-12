@@ -1,4 +1,4 @@
-.PHONY: help image push sbom scan eval docs-install docs-dev docs-build clean lint format test
+.PHONY: help image push sbom scan eval report cost-report baseline-compare docs-install docs-dev docs-build clean lint format test
 
 # Load environment variables from .env if it exists
 ifneq (,$(wildcard ./.env))
@@ -51,6 +51,28 @@ eval: ## Run Promptfoo evaluations
 eval-local: ## Run evaluations locally (without Docker)
 	@echo "Running evaluations locally..."
 	cd eval && npx --yes promptfoo@latest eval -c promptfoo.yaml
+
+report: ## Generate HTML report from latest evaluation results
+	@echo "Generating evaluation report..."
+	node scripts/generate-report.mjs eval/output/latest.json eval/output/report.html
+	@echo "Report available at: eval/output/report.html"
+
+cost-report: ## Generate cost tracking report
+	@echo "Generating cost report..."
+	node scripts/cost-tracker.mjs eval/output
+	@echo "Cost report generated"
+
+baseline-compare: ## Compare current results against baseline
+	@echo "Comparing against baseline..."
+	@if [ ! -f eval/output/latest.json ]; then \
+		echo "Error: No latest.json found. Run evaluations first."; \
+		exit 1; \
+	fi
+	@if [ ! -f eval/baselines/baseline-example.json ]; then \
+		echo "Error: No baseline found. Create a baseline first."; \
+		exit 1; \
+	fi
+	node scripts/baseline-compare.mjs eval/output/latest.json eval/baselines/baseline-example.json
 
 docs-install: ## Install documentation dependencies
 	@echo "Installing documentation dependencies..."
