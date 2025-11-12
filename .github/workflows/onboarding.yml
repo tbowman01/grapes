@@ -1,0 +1,211 @@
+name: Developer Onboarding
+
+on:
+  issues:
+    types: [opened]
+  pull_request_target:
+    types: [opened]
+
+permissions:
+  issues: write
+  pull-requests: write
+
+jobs:
+  welcome:
+    name: Welcome New Contributors
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check if first-time contributor
+        id: check
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const creator = context.payload.sender.login;
+
+            // Get all issues and PRs by this user
+            const issuesAndPRs = await github.rest.search.issuesAndPullRequests({
+              q: `repo:${context.repo.owner}/${context.repo.repo} author:${creator}`
+            });
+
+            const isFirstTime = issuesAndPRs.data.total_count === 1;
+
+            console.log(`User ${creator} has ${issuesAndPRs.data.total_count} contributions`);
+            console.log(`Is first-time: ${isFirstTime}`);
+
+            return isFirstTime;
+
+      - name: Welcome first-time issue creator
+        if: steps.check.outputs.result == 'true' && github.event_name == 'issues'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const message = `## 👋 Welcome to GRAPES Hub!
+
+            Thank you for opening your first issue, @${context.payload.sender.login}!
+
+            ### What happens next?
+
+            1. ✅ A maintainer will review your issue
+            2. 🏷️ We'll add appropriate labels
+            3. 💬 We may ask for more information
+            4. 🚀 Once confirmed, it may be added to our roadmap
+
+            ### Getting Started
+
+            While you wait, here are some helpful resources:
+
+            - 📚 [Documentation](https://tbowman01.github.io/grapes/)
+            - 🎯 [Quick Start Guide](https://tbowman01.github.io/grapes/docs/getting-started/quick-start)
+            - 🗺️ [Roadmap](https://tbowman01.github.io/grapes/docs/roadmap)
+            - 🤝 [Contributing Guide](https://tbowman01.github.io/grapes/docs/contributing)
+
+            ### Want to contribute?
+
+            We'd love your help! Check out:
+            - [Good First Issues](https://github.com/${context.repo.owner}/${context.repo.repo}/labels/good%20first%20issue)
+            - [Help Wanted](https://github.com/${context.repo.owner}/${context.repo.repo}/labels/help%20wanted)
+
+            Thanks again for your contribution! 🍇
+            `;
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: message
+            });
+
+      - name: Welcome first-time PR creator
+        if: steps.check.outputs.result == 'true' && github.event_name == 'pull_request_target'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const message = `## 🎉 Welcome to GRAPES Hub!
+
+            Thank you for your first pull request, @${context.payload.sender.login}!
+
+            ### PR Checklist
+
+            Please ensure your PR meets these requirements:
+
+            - [ ] Code follows our style guide
+            - [ ] Tests have been added/updated
+            - [ ] Documentation has been updated
+            - [ ] All CI checks pass
+            - [ ] PR description clearly explains changes
+
+            ### What happens next?
+
+            1. ✅ Automated checks will run (tests, linting, security scans)
+            2. 👀 A maintainer will review your code
+            3. 💬 We may request changes or ask questions
+            4. 🎯 Once approved, your PR will be merged!
+
+            ### Helpful Resources
+
+            - 📚 [Contributing Guide](https://tbowman01.github.io/grapes/docs/contributing)
+            - 🧪 [Running Tests](https://tbowman01.github.io/grapes/docs/getting-started/quick-start)
+            - 🏗️ [Architecture Decisions](https://tbowman01.github.io/grapes/docs/adr)
+
+            ### Need Help?
+
+            - 💬 Comment on this PR with questions
+            - 🐛 Ask in [Discussions](https://github.com/${context.repo.owner}/${context.repo.repo}/discussions)
+            - 📖 Check our [Documentation](https://tbowman01.github.io/grapes/)
+
+            Thank you for contributing to GRAPES Hub! 🍇
+            `;
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: message
+            });
+
+      - name: Add labels to first-time contributions
+        if: steps.check.outputs.result == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              labels: ['first-time-contributor']
+            });
+
+  assign-reviewer:
+    name: Auto-assign Reviewers
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request_target'
+    steps:
+      - name: Auto-assign reviewers
+        uses: actions/github-script@v7
+        with:
+          script: |
+            // Auto-assign based on CODEOWNERS or default reviewers
+            const reviewers = ['tbowman01'];
+
+            // Don't assign if PR is from a reviewer
+            if (!reviewers.includes(context.payload.sender.login)) {
+              await github.rest.pulls.requestReviewers({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: context.issue.number,
+                reviewers: reviewers
+              });
+            }
+
+  add-labels:
+    name: Auto-label PRs
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request_target'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Auto-label based on files changed
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: files } = await github.rest.pulls.listFiles({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number
+            });
+
+            const labels = new Set();
+
+            for (const file of files) {
+              if (file.filename.startsWith('docs/')) {
+                labels.add('documentation');
+              }
+              if (file.filename.startsWith('.github/workflows/')) {
+                labels.add('area: ci/cd');
+              }
+              if (file.filename.startsWith('eval/')) {
+                labels.add('area: evaluation');
+              }
+              if (file.filename.startsWith('containers/')) {
+                labels.add('area: docker');
+              }
+              if (file.filename.includes('security') || file.filename.includes('trivy')) {
+                labels.add('area: security');
+              }
+              if (file.filename.endsWith('.md')) {
+                labels.add('documentation');
+              }
+              if (file.filename.includes('test')) {
+                labels.add('test');
+              }
+            }
+
+            if (labels.size > 0) {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                labels: Array.from(labels)
+              });
+            }
